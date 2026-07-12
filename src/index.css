@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+@import '@fontsource/sora/600.css';
+@import '@fontsource/sora/700.css';
+@import '@fontsource/public-sans/400.css';
+@import '@fontsource/public-sans/500.css';
+@import '@fontsource/public-sans/600.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-page: #f9f9f7;
+  --color-page-dark: #0d0d0d;
+  --color-paper: #fcfcfb;
+  --color-paper-dark: #1a1a19;
+  --color-ink: #0b0b0b;
+  --color-ink-dark: #ffffff;
+  --color-ink-2: #52514e;
+  --color-ink-2-dark: #c3c2b7;
+  --color-muted: #898781;
+  --color-grid: #e1e0d9;
+  --color-grid-dark: #2c2c2a;
+  --color-baseline: #c3c2b7;
+  --color-baseline-dark: #383835;
+  --color-accent: #2a78d6;
+  --color-accent-dark: #3987e5;
+  --color-good: #006300;
+  --color-good-dark: #0ca30c;
+  --color-bad: #d03b3b;
+  --color-bad-dark: #e66767;
+}
+
+body {
+  @apply bg-page font-sans text-ink antialiased dark:bg-page-dark dark:text-ink-dark;
+}
