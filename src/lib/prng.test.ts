@@ -12,6 +12,10 @@ describe('mulberry32', () => {
     expect(mulberry32(1)()).not.toEqual(mulberry32(2)());
   });
 
+  it('matches the canonical mulberry32 sequence', () => {
+    expect(mulberry32(42)()).toBeCloseTo(0.6011037519201636, 12);
+  });
+
   it('stays in [0, 1)', () => {
     const r = mulberry32(7);
     for (let i = 0; i < 1000; i++) {
