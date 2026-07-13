@@ -8,7 +8,7 @@ export default function App() {
       type="button"
       onClick={toggleDark}
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="rounded-lg border border-ink/10 bg-paper p-2 text-ink-2 hover:text-ink focus-visible:ring-2 focus-visible:ring-accent dark:border-white/10 dark:bg-paper-dark dark:text-ink-2-dark dark:hover:text-ink-dark"
+      className="rounded-lg border border-ink/10 bg-paper p-2 text-ink-2 hover:text-ink focus-visible:ring-2 focus-visible:ring-accent dark:focus-visible:ring-accent-dark dark:border-white/10 dark:bg-paper-dark dark:text-ink-2-dark dark:hover:text-ink-dark"
     >
       {dark ? (
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">

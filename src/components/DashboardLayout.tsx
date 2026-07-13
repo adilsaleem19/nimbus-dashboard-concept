@@ -63,7 +63,7 @@ export default function DashboardLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-ink/10 bg-page/90 px-4 py-3 backdrop-blur md:px-6 dark:border-white/10 dark:bg-page-dark/90">
           <div className="flex items-center gap-2.5">
-            <span className="font-display text-base font-semibold md:hidden">Nimbus</span>
+            <h1 className="font-display text-base font-semibold md:hidden">Nimbus</h1>
             <h1 className="hidden font-display text-base font-semibold md:block">Overview</h1>
           </div>
           <div className="flex items-center gap-2">{topBarContent}</div>

@@ -3,11 +3,21 @@ import { useEffect, useState } from 'react';
 const STORAGE_KEY = 'nimbus-theme';
 
 export function useDarkMode(): [boolean, () => void] {
-  const [dark, setDark] = useState(() => localStorage.getItem(STORAGE_KEY) === 'dark');
+  const [dark, setDark] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === 'dark';
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light');
+    try {
+      localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light');
+    } catch {
+      /* storage unavailable */
+    }
   }, [dark]);
 
   return [dark, () => setDark((d) => !d)];
