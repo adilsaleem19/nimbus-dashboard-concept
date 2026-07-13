@@ -51,6 +51,30 @@ describe('mock data generator', () => {
     }
   });
 
+  // Golden values pinned from an actual run — guard against rand()-call-order
+  // refactors silently reshuffling every generated number.
+  it('matches pinned golden daily metrics', () => {
+    expect(dailyMetrics[0]).toEqual({
+      date: '2026-01-15',
+      mrr: 46069,
+      activeUsers: 618,
+      newSignups: 9,
+      churnedUsers: 1,
+    });
+    expect(dailyMetrics[179].mrr).toBe(89748);
+  });
+
+  it('matches pinned golden first transaction', () => {
+    expect(transactions[0]).toEqual({
+      id: 'TXN-1000',
+      customerName: 'Ethan Chen',
+      plan: 'Starter',
+      amount: 19,
+      date: '2026-05-13',
+      status: 'failed',
+    });
+  });
+
   it('derives plan breakdown consistent with transactions', () => {
     const breakdown = derivePlanBreakdown(transactions);
     expect(breakdown.map((b) => b.plan)).toEqual(['Starter', 'Growth', 'Scale']);

@@ -81,6 +81,15 @@ function generateTransactions(rand: () => number): Transaction[] {
   return rows;
 }
 
+/**
+ * Aggregates plan mix from a (possibly range-filtered) set of transactions.
+ *
+ * - Customer identity is keyed on `customerName` by design: this is mock data,
+ *   and names are the only stable customer identifier we generate.
+ * - `mrr` is status-agnostic gross plan MRR — customers with only pending or
+ *   failed transactions still count. By design: the donut shows plan mix,
+ *   not realized revenue.
+ */
 export function derivePlanBreakdown(rows: Transaction[]): PlanBreakdown[] {
   return PLANS.map((plan) => {
     const distinct = new Set(rows.filter((t) => t.plan === plan).map((t) => t.customerName));
