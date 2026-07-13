@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
 import KPICard from './components/KPICard';
-import { sampleSeries } from './components/Sparkline';
 import { ANCHOR_DATE, dailyMetrics } from './data/mockData';
 import { useDarkMode } from './hooks/useDarkMode';
 import { previousWindow, rangeWindow } from './lib/dateRange';
 import { formatCurrency, formatNumber, formatPercent } from './lib/format';
 import { computeKpis } from './lib/kpis';
+import { sampleSeries } from './lib/sample';
 
 export default function App() {
   const [dark, toggleDark] = useDarkMode();
@@ -50,6 +50,7 @@ export default function App() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KPICard label="Monthly recurring revenue" value={formatCurrency(kpis.mrr.value)} deltaPercent={kpis.mrr.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.mrr)} isLoading={isLoading} />
         <KPICard label="Active users" value={formatNumber(kpis.activeUsers.value)} deltaPercent={kpis.activeUsers.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.activeUsers)} isLoading={isLoading} />
+        {/* churn sparkline plots raw daily churned counts — shape, not the normalized headline rate */}
         <KPICard label="Churn rate" value={formatPercent(kpis.churnRate.value)} deltaPercent={kpis.churnRate.deltaPercent} deltaLabel={deltaLabel} invertColor spark={spark((m) => m.churnedUsers)} isLoading={isLoading} />
         <KPICard label="New signups" value={formatNumber(kpis.newSignups.value)} deltaPercent={kpis.newSignups.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.newSignups)} isLoading={isLoading} />
       </div>

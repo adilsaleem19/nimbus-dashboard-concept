@@ -30,22 +30,22 @@ export default function KPICard({
 }: KPICardProps) {
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-ink/10 bg-paper p-4 dark:border-white/10 dark:bg-paper-dark">
+      <div className="rounded-xl border border-ink/10 bg-paper p-4 shadow-xs dark:border-white/10 dark:bg-paper-dark">
         <div className="h-3.5 w-20 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
-        <div className="mt-3 h-7 w-28 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
-        <div className="mt-3 h-3.5 w-32 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
+        <div className="mt-1 h-8 w-28 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
+        <div className="mt-1.5 h-3.5 w-32 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
       </div>
     );
   }
 
   const up = (deltaPercent ?? 0) >= 0;
   const good = invertColor ? !up : up;
-  const deltaColor =
-    deltaPercent === null
-      ? 'text-muted'
-      : good
-        ? 'text-good dark:text-good-dark'
-        : 'text-bad dark:text-bad-dark';
+  const isNeutral = deltaPercent === null || deltaPercent === 0;
+  const deltaColor = isNeutral
+    ? 'text-muted'
+    : good
+      ? 'text-good dark:text-good-dark'
+      : 'text-bad dark:text-bad-dark';
 
   return (
     <div className="rounded-xl border border-ink/10 bg-paper p-4 shadow-xs dark:border-white/10 dark:bg-paper-dark">
@@ -56,7 +56,7 @@ export default function KPICard({
       </div>
       <div className="mt-1.5 flex items-center gap-1 text-xs">
         <span className={`flex items-center gap-0.5 font-semibold ${deltaColor}`}>
-          {deltaPercent !== null && <DeltaArrow up={up} />}
+          {deltaPercent !== null && deltaPercent !== 0 && <DeltaArrow up={up} />}
           {formatDelta(deltaPercent)}
         </span>
         <span className="text-muted">{deltaLabel}</span>
