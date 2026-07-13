@@ -1,8 +1,31 @@
+import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
+import KPICard from './components/KPICard';
+import { sampleSeries } from './components/Sparkline';
+import { ANCHOR_DATE, dailyMetrics } from './data/mockData';
 import { useDarkMode } from './hooks/useDarkMode';
+import { previousWindow, rangeWindow } from './lib/dateRange';
+import { formatCurrency, formatNumber, formatPercent } from './lib/format';
+import { computeKpis } from './lib/kpis';
 
 export default function App() {
   const [dark, toggleDark] = useDarkMode();
+  const [isLoading, setIsLoading] = useState(true);
+  const dateRange = 30; // becomes state in Task 10
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
+
+  const currentMetrics = useMemo(() => rangeWindow(dailyMetrics, dateRange, ANCHOR_DATE), [dateRange]);
+  const previousMetrics = useMemo(() => previousWindow(dailyMetrics, dateRange, ANCHOR_DATE), [dateRange]);
+  const kpis = useMemo(() => computeKpis(currentMetrics, previousMetrics), [currentMetrics, previousMetrics]);
+  const deltaLabel = `vs previous ${dateRange} days`;
+
+  const spark = (pick: (m: (typeof dailyMetrics)[number]) => number) =>
+    sampleSeries(currentMetrics.map(pick));
+
   const darkToggle = (
     <button
       type="button"
@@ -24,7 +47,12 @@ export default function App() {
   );
   return (
     <DashboardLayout topBarContent={darkToggle}>
-      <div className="text-sm text-ink-2 dark:text-ink-2-dark">Dashboard content lands here.</div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KPICard label="Monthly recurring revenue" value={formatCurrency(kpis.mrr.value)} deltaPercent={kpis.mrr.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.mrr)} isLoading={isLoading} />
+        <KPICard label="Active users" value={formatNumber(kpis.activeUsers.value)} deltaPercent={kpis.activeUsers.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.activeUsers)} isLoading={isLoading} />
+        <KPICard label="Churn rate" value={formatPercent(kpis.churnRate.value)} deltaPercent={kpis.churnRate.deltaPercent} deltaLabel={deltaLabel} invertColor spark={spark((m) => m.churnedUsers)} isLoading={isLoading} />
+        <KPICard label="New signups" value={formatNumber(kpis.newSignups.value)} deltaPercent={kpis.newSignups.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.newSignups)} isLoading={isLoading} />
+      </div>
     </DashboardLayout>
   );
 }
