@@ -26,14 +26,29 @@ describe('computeKpis', () => {
     expect(k.newSignups.deltaPercent).toBeCloseTo(50, 5); // (24-16)/16
   });
 
-  it('Churn rate: churned / avg active, relative delta', () => {
-    expect(k.churnRate.value).toBeCloseTo(3.15789, 4);
-    expect(k.churnRate.deltaPercent).toBeCloseTo(18.42105, 4); // (3.1579-2.6667)/2.6667
+  it('Churn rate: churned / avg active, normalized to a 30-day rate, relative delta', () => {
+    // current: (6 / avg(180,200)) * 100 * (30/2) = (6/190) * 100 * 15 = 47.36842
+    expect(k.churnRate.value).toBeCloseTo(47.36842, 4);
+    // relative delta unchanged by normalization (30/N factor cancels):
+    // ((6/190) - (4/150)) / (4/150) = 18.42105
+    expect(k.churnRate.deltaPercent).toBeCloseTo(18.42105, 4);
   });
 
   it('returns null deltas when previous window is empty', () => {
     const k2 = computeKpis(current, []);
     expect(k2.mrr.deltaPercent).toBeNull();
     expect(k2.churnRate.deltaPercent).toBeNull();
+  });
+
+  it('returns zero churn rate when active users are all zero', () => {
+    const zeroActive = [d('2026-07-11', 0, 0, 0, 3), d('2026-07-12', 0, 0, 0, 5)];
+    const k3 = computeKpis(zeroActive, previous);
+    expect(k3.churnRate.value).toBe(0);
+  });
+
+  it('returns null MRR delta when previous last-day MRR is 0', () => {
+    const zeroMrrPrev = [d('2026-07-09', 500, 140, 8, 2), d('2026-07-10', 0, 160, 8, 2)];
+    const k4 = computeKpis(current, zeroMrrPrev);
+    expect(k4.mrr.deltaPercent).toBeNull();
   });
 });

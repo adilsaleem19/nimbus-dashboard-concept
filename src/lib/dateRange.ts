@@ -12,7 +12,13 @@ export function rangeWindow(metrics: DailyMetric[], days: number, anchor: string
   return metrics.filter((m) => m.date >= start && m.date <= anchor);
 }
 
-/** The N-day window immediately before the current one. */
+/**
+ * The N-day window immediately before the current one.
+ *
+ * Invariant: callers (KPI deltas) assume the previous and current windows are
+ * equal length. That holds for every supported range (7/30/90) against the
+ * 180-day dataset — the largest range needs exactly 2 x 90 = 180 days.
+ */
 export function previousWindow(metrics: DailyMetric[], days: number, anchor: string): DailyMetric[] {
   const prevAnchor = format(subDays(parseISO(anchor), days), 'yyyy-MM-dd');
   return rangeWindow(metrics, days, prevAnchor);

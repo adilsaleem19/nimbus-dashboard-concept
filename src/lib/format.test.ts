@@ -26,6 +26,10 @@ describe('format helpers', () => {
     expect(formatDelta(null)).toBe('—');
   });
 
+  it('treats a zero delta as positive-signed', () => {
+    expect(formatDelta(0)).toBe('+0.0%');
+  });
+
   it('formats ISO dates for display', () => {
     expect(formatDate('2026-07-13')).toBe('Jul 13, 2026');
   });

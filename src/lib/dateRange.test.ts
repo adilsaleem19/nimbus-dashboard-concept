@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { previousWindow, rangeStart, rangeWindow } from './dateRange';
+import { ANCHOR_DATE, dailyMetrics } from '../data/mockData';
 import type { DailyMetric } from '../types';
 
 const metric = (date: string): DailyMetric => ({
@@ -35,5 +36,15 @@ describe('rangeStart', () => {
   it('returns the first ISO date of the window', () => {
     expect(rangeStart(7, '2026-07-13')).toBe('2026-07-07');
     expect(rangeStart(30, '2026-07-13')).toBe('2026-06-14');
+  });
+});
+
+describe('against the real 180-day dataset', () => {
+  it('tiles the 90-day current and previous windows exactly, without overlap', () => {
+    const current = rangeWindow(dailyMetrics, 90, ANCHOR_DATE);
+    const prev = previousWindow(dailyMetrics, 90, ANCHOR_DATE);
+    expect(current).toHaveLength(90);
+    expect(prev).toHaveLength(90);
+    expect(prev[prev.length - 1].date < current[0].date).toBe(true);
   });
 });

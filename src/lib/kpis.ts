@@ -21,11 +21,16 @@ function pctChange(cur: number, prev: number | undefined): number | null {
   return ((cur - prev) / prev) * 100;
 }
 
-/** Churned users over the window as a % of average active users. */
+/**
+ * Churned users over the window as a % of average active users,
+ * normalized to a 30-day rate so values compare across 7/30/90 windows.
+ * The relative delta is unaffected (the 30/N factor cancels).
+ */
 function churnRate(win: DailyMetric[]): number {
+  if (win.length === 0) return 0;
   const active = avg(win.map((m) => m.activeUsers));
   if (active === 0) return 0;
-  return (sum(win.map((m) => m.churnedUsers)) / active) * 100;
+  return (sum(win.map((m) => m.churnedUsers)) / active) * (30 / win.length) * 100;
 }
 
 export function computeKpis(current: DailyMetric[], previous: DailyMetric[]): KpiSet {
