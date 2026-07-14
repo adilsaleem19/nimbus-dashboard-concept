@@ -3,12 +3,14 @@ import DashboardLayout from './components/DashboardLayout';
 import DataTable from './components/DataTable';
 import KPICard from './components/KPICard';
 import RevenueChart from './components/RevenueChart';
-import { ANCHOR_DATE, dailyMetrics, transactions } from './data/mockData';
+import SegmentChart from './components/SegmentChart';
+import { ANCHOR_DATE, dailyMetrics, derivePlanBreakdown, transactions } from './data/mockData';
 import { useDarkMode } from './hooks/useDarkMode';
 import { previousWindow, rangeStart, rangeWindow } from './lib/dateRange';
 import { formatCurrency, formatNumber, formatPercent } from './lib/format';
 import { computeKpis } from './lib/kpis';
 import { sampleSeries } from './lib/sample';
+import type { Plan } from './types';
 
 export default function App() {
   const [dark, toggleDark] = useDarkMode();
@@ -32,6 +34,10 @@ export default function App() {
     const start = rangeStart(dateRange, ANCHOR_DATE);
     return transactions.filter((t) => t.date >= start);
   }, [dateRange]);
+
+  const [planFilter, setPlanFilter] = useState<Plan | null>(null);
+  const planBreakdown = useMemo(() => derivePlanBreakdown(rangeTransactions), [rangeTransactions]);
+  const handleSegmentClick = (plan: Plan) => setPlanFilter((p) => (p === plan ? null : plan));
 
   const darkToggle = (
     <button
@@ -66,6 +72,13 @@ export default function App() {
           <div className="xl:col-span-2">
             <RevenueChart data={currentMetrics} dark={dark} isLoading={isLoading} />
           </div>
+          <SegmentChart
+            data={planBreakdown}
+            activePlan={planFilter}
+            onSegmentClick={handleSegmentClick}
+            dark={dark}
+            isLoading={isLoading}
+          />
         </div>
         <DataTable transactions={rangeTransactions} isLoading={isLoading} />
       </>
