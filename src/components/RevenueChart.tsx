@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { DailyMetric } from '../types';
 import { chartThemes } from '../lib/palette';
@@ -38,6 +39,7 @@ export default function RevenueChart({
   isLoading: boolean;
 }) {
   const c = chartThemes[dark ? 'dark' : 'light'];
+  const gradientId = useId();
   return (
     <section className="rounded-xl border border-ink/10 bg-paper p-4 shadow-xs dark:border-white/10 dark:bg-paper-dark">
       <h2 className="font-display text-sm font-semibold">Monthly recurring revenue</h2>
@@ -48,7 +50,7 @@ export default function RevenueChart({
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="mrrFill" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={c.accent} stopOpacity={0.16} />
                 <stop offset="100%" stopColor={c.accent} stopOpacity={0.02} />
               </linearGradient>
@@ -62,6 +64,9 @@ export default function RevenueChart({
               tickLine={false}
               minTickGap={32}
             />
+            {/* auto domain (not zero-based) is intentional: the line is the subject and a
+                zero baseline would flatten the $45-90k range; the fill is a faint wash, not
+                a magnitude encoding */}
             <YAxis
               tickFormatter={formatCompactCurrency}
               tick={{ fill: c.tick, fontSize: 11, style: { fontVariantNumeric: 'tabular-nums' } }}
@@ -76,7 +81,7 @@ export default function RevenueChart({
               dataKey="mrr"
               stroke={c.accent}
               strokeWidth={2}
-              fill="url(#mrrFill)"
+              fill={`url(#${gradientId})`}
               activeDot={{ r: 4, fill: c.accent, stroke: c.surface, strokeWidth: 2 }}
             />
           </AreaChart>
