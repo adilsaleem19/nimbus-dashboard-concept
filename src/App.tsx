@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
 import DataTable from './components/DataTable';
 import DateRangePicker from './components/DateRangePicker';
+import FilterChip from './components/FilterChip';
 import KPICard from './components/KPICard';
 import RevenueChart from './components/RevenueChart';
 import SegmentChart from './components/SegmentChart';
@@ -10,6 +11,7 @@ import { useDarkMode } from './hooks/useDarkMode';
 import { previousWindow, rangeStart, rangeWindow } from './lib/dateRange';
 import { formatCurrency, formatNumber, formatPercent } from './lib/format';
 import { computeKpis } from './lib/kpis';
+import { chartThemes } from './lib/palette';
 import { sampleSeries } from './lib/sample';
 import type { DateRange, Plan } from './types';
 
@@ -39,6 +41,12 @@ export default function App() {
   const [planFilter, setPlanFilter] = useState<Plan | null>(null);
   const planBreakdown = useMemo(() => derivePlanBreakdown(rangeTransactions), [rangeTransactions]);
   const handleSegmentClick = (plan: Plan) => setPlanFilter((p) => (p === plan ? null : plan));
+  const visibleTransactions = useMemo(
+    () => (planFilter ? rangeTransactions.filter((t) => t.plan === planFilter) : rangeTransactions),
+    [rangeTransactions, planFilter],
+  );
+  const clearFilter = () => setPlanFilter(null);
+  const planHex = chartThemes[dark ? 'dark' : 'light'].plans;
 
   const darkToggle = (
     <button
@@ -88,7 +96,32 @@ export default function App() {
             isLoading={isLoading}
           />
         </div>
-        <DataTable transactions={rangeTransactions} isLoading={isLoading} />
+        <DataTable
+          transactions={visibleTransactions}
+          isLoading={isLoading}
+          header={
+            planFilter && (
+              <FilterChip plan={planFilter} colorHex={planHex[planFilter]} onClear={clearFilter} />
+            )
+          }
+          emptyState={
+            planFilter ? (
+              <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
+                <div className="text-sm font-medium">No {planFilter} transactions in this range</div>
+                <p className="max-w-xs text-xs text-muted">
+                  Try a longer date range, or clear the plan filter to see all transactions.
+                </p>
+                <button
+                  type="button"
+                  onClick={clearFilter}
+                  className="rounded-lg border border-ink/10 bg-paper px-3 py-1.5 text-xs font-semibold hover:bg-ink/5 focus-visible:ring-2 focus-visible:ring-accent dark:border-white/10 dark:bg-paper-dark dark:hover:bg-white/5 dark:focus-visible:ring-accent-dark"
+                >
+                  Clear filter
+                </button>
+              </div>
+            ) : undefined
+          }
+        />
       </>
     </DashboardLayout>
   );
