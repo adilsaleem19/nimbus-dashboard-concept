@@ -23,8 +23,9 @@ const STATUS_STYLES: Record<TransactionStatus, { dot: string; pill: string; labe
     label: 'Pending',
   },
   failed: {
+    // darker text than the #d03b3b dot so 12px pill text clears AA on the light tint
     dot: 'bg-[#d03b3b]',
-    pill: 'bg-[#d03b3b]/10 text-bad dark:text-bad-dark',
+    pill: 'bg-[#d03b3b]/10 text-[#a51f1f] dark:text-bad-dark',
     label: 'Failed',
   },
 };
@@ -89,11 +90,11 @@ export default function DataTable({
   const rows = sortTransactions(transactions, sort.column, sort.direction);
 
   return (
-    <section className="mt-4 rounded-xl border border-ink/10 bg-paper shadow-xs dark:border-white/10 dark:bg-paper-dark">
+    <section className="mt-4 overflow-hidden rounded-xl border border-ink/10 bg-paper shadow-xs dark:border-white/10 dark:bg-paper-dark">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/10 px-4 py-3 dark:border-white/10">
         <div>
           <h2 className="font-display text-sm font-semibold">Transactions</h2>
-          <p className="text-xs text-muted">{rows.length} in the selected range</p>
+          <p className="text-xs text-muted">{isLoading ? 'Loading…' : `${rows.length} in the selected range`}</p>
         </div>
         {header}
       </div>
@@ -111,6 +112,7 @@ export default function DataTable({
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
+                    scope="col"
                     aria-sort={
                       sort.column === col.key
                         ? sort.direction === 'asc' ? 'ascending' : 'descending'
@@ -121,7 +123,8 @@ export default function DataTable({
                     <button
                       type="button"
                       onClick={() => toggleSort(col.key)}
-                      className={`inline-flex items-center gap-1 text-xs uppercase tracking-wide hover:text-ink focus-visible:ring-2 focus-visible:ring-accent dark:hover:text-ink-dark ${col.numeric ? 'flex-row-reverse' : ''}`}
+                      aria-label={`Sort by ${col.label}`}
+                      className={`inline-flex items-center gap-1 text-xs uppercase tracking-wide hover:text-ink focus-visible:ring-2 focus-visible:ring-accent dark:hover:text-ink-dark dark:focus-visible:ring-accent-dark ${col.numeric ? 'flex-row-reverse' : ''}`}
                     >
                       {col.label}
                       <SortIndicator direction={sort.column === col.key ? sort.direction : null} />
