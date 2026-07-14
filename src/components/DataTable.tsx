@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type Ref } from 'react';
 import type { Plan, Transaction, TransactionStatus } from '../types';
 import { formatCurrency, formatDate } from '../lib/format';
 import { sortTransactions, type SortColumn, type SortDirection } from '../lib/sort';
@@ -69,11 +69,14 @@ export default function DataTable({
   isLoading,
   header,
   emptyState,
+  headingRef,
 }: {
   transactions: Transaction[];
   isLoading: boolean;
   header?: ReactNode;
   emptyState?: ReactNode;
+  // focus lands here after a drill-down filter is cleared, so keyboard users keep their place
+  headingRef?: Ref<HTMLHeadingElement>;
 }) {
   const [sort, setSort] = useState<{ column: SortColumn; direction: SortDirection }>({
     column: 'date',
@@ -93,7 +96,7 @@ export default function DataTable({
     <section className="mt-4 overflow-hidden rounded-xl border border-ink/10 bg-paper shadow-xs dark:border-white/10 dark:bg-paper-dark">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/10 px-4 py-3 dark:border-white/10">
         <div>
-          <h2 className="font-display text-sm font-semibold">Transactions</h2>
+          <h2 ref={headingRef} tabIndex={-1} className="font-display text-sm font-semibold outline-none">Transactions</h2>
           <p className="text-xs text-muted">{isLoading ? 'Loading…' : `${rows.length} in the selected range`}</p>
         </div>
         {header}

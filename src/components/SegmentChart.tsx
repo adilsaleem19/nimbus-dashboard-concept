@@ -82,17 +82,20 @@ export default function SegmentChart({
           </div>
           <ul className="mt-3 space-y-1">
             {data.map((b) => {
-              const dimmed = activePlan !== null && activePlan !== b.plan;
-              const empty = b.userCount === 0; // no rows to drill into — not a filter target
+              const active = activePlan === b.plan;
+              const dimmed = activePlan !== null && !active;
+              // a 0-row plan can't be filtered INTO, but if it's already the active
+              // filter (e.g. after a range switch emptied it) keep it clickable to clear
+              const disabled = b.userCount === 0 && !active;
               return (
                 <li key={b.plan}>
                   <button
                     type="button"
                     onClick={() => onSegmentClick(b.plan)}
-                    disabled={empty}
-                    aria-pressed={activePlan === b.plan}
+                    disabled={disabled}
+                    aria-pressed={active}
                     aria-label={`Filter transactions by ${b.plan} plan`}
-                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-accent dark:focus-visible:ring-accent-dark ${empty ? 'cursor-not-allowed opacity-40' : 'hover:bg-ink/5 dark:hover:bg-white/5'} ${dimmed ? 'opacity-50' : ''}`}
+                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-accent dark:focus-visible:ring-accent-dark ${disabled ? 'cursor-not-allowed opacity-40' : 'hover:bg-ink/5 dark:hover:bg-white/5'} ${dimmed ? 'opacity-50' : ''}`}
                   >
                     <span
                       className="h-2.5 w-2.5 rounded-full"

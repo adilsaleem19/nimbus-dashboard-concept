@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
 import DataTable from './components/DataTable';
 import DateRangePicker from './components/DateRangePicker';
@@ -45,7 +45,13 @@ export default function App() {
     () => (planFilter ? rangeTransactions.filter((t) => t.plan === planFilter) : rangeTransactions),
     [rangeTransactions, planFilter],
   );
-  const clearFilter = () => setPlanFilter(null);
+  // clearing unmounts the chip / empty-state button that had focus; move focus to the
+  // (always-present) table heading so keyboard and screen-reader users keep their place
+  const tableHeadingRef = useRef<HTMLHeadingElement>(null);
+  const clearFilter = () => {
+    setPlanFilter(null);
+    tableHeadingRef.current?.focus();
+  };
   const planHex = chartThemes[dark ? 'dark' : 'light'].plans;
 
   const darkToggle = (
@@ -99,6 +105,7 @@ export default function App() {
         <DataTable
           transactions={visibleTransactions}
           isLoading={isLoading}
+          headingRef={tableHeadingRef}
           header={
             planFilter && (
               <FilterChip plan={planFilter} colorHex={planHex[planFilter]} onClear={clearFilter} />
