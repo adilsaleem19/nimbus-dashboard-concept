@@ -5,9 +5,19 @@ import { formatNumber, formatPercent } from '../lib/format';
 
 function DonutSkeleton() {
   return (
-    <div className="flex h-[180px] items-center justify-center">
-      <div className="h-40 w-40 animate-pulse rounded-full border-[16px] border-ink/5 motion-reduce:animate-none dark:border-white/10" />
-    </div>
+    <>
+      <div className="flex h-[180px] items-center justify-center">
+        <div className="h-40 w-40 animate-pulse rounded-full border-[16px] border-ink/5 motion-reduce:animate-none dark:border-white/10" />
+      </div>
+      {/* legend placeholders keep the card height stable when data loads */}
+      <ul className="mt-3 space-y-1">
+        {Array.from({ length: 3 }, (_, i) => (
+          <li key={i} className="px-2 py-1.5">
+            <div className="h-4 animate-pulse rounded bg-ink/5 motion-reduce:animate-none dark:bg-white/10" />
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -36,7 +46,9 @@ export default function SegmentChart({
         <DonutSkeleton />
       ) : (
         <>
-          <div className="relative h-[180px]">
+          {/* the donut duplicates the legend for pointer users; the legend below is the
+              keyboard/SR-accessible equivalent, so hide the SVG from assistive tech */}
+          <div className="relative h-[180px]" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -56,7 +68,7 @@ export default function SegmentChart({
                     <Cell
                       key={b.plan}
                       fill={c.plans[b.plan]}
-                      opacity={activePlan && activePlan !== b.plan ? 0.35 : 1}
+                      fillOpacity={activePlan && activePlan !== b.plan ? 0.35 : 1}
                       cursor="pointer"
                     />
                   ))}
@@ -71,13 +83,16 @@ export default function SegmentChart({
           <ul className="mt-3 space-y-1">
             {data.map((b) => {
               const dimmed = activePlan !== null && activePlan !== b.plan;
+              const empty = b.userCount === 0; // no rows to drill into — not a filter target
               return (
                 <li key={b.plan}>
                   <button
                     type="button"
                     onClick={() => onSegmentClick(b.plan)}
+                    disabled={empty}
                     aria-pressed={activePlan === b.plan}
-                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-ink/5 focus-visible:ring-2 focus-visible:ring-accent dark:hover:bg-white/5 dark:focus-visible:ring-accent-dark ${dimmed ? 'opacity-50' : ''}`}
+                    aria-label={`Filter transactions by ${b.plan} plan`}
+                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-accent dark:focus-visible:ring-accent-dark ${empty ? 'cursor-not-allowed opacity-40' : 'hover:bg-ink/5 dark:hover:bg-white/5'} ${dimmed ? 'opacity-50' : ''}`}
                   >
                     <span
                       className="h-2.5 w-2.5 rounded-full"
