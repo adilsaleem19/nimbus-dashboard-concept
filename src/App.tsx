@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
 import DataTable from './components/DataTable';
+import DateRangePicker from './components/DateRangePicker';
 import KPICard from './components/KPICard';
 import RevenueChart from './components/RevenueChart';
 import SegmentChart from './components/SegmentChart';
@@ -10,12 +11,12 @@ import { previousWindow, rangeStart, rangeWindow } from './lib/dateRange';
 import { formatCurrency, formatNumber, formatPercent } from './lib/format';
 import { computeKpis } from './lib/kpis';
 import { sampleSeries } from './lib/sample';
-import type { Plan } from './types';
+import type { DateRange, Plan } from './types';
 
 export default function App() {
   const [dark, toggleDark] = useDarkMode();
   const [isLoading, setIsLoading] = useState(true);
-  const dateRange = 30; // becomes state in Task 10
+  const [dateRange, setDateRange] = useState<DateRange>(30);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -59,7 +60,14 @@ export default function App() {
     </button>
   );
   return (
-    <DashboardLayout topBarContent={darkToggle}>
+    <DashboardLayout
+      topBarContent={
+        <>
+          <DateRangePicker value={dateRange} onChange={setDateRange} />
+          {darkToggle}
+        </>
+      }
+    >
       <>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KPICard label="Monthly recurring revenue" value={formatCurrency(kpis.mrr.value)} deltaPercent={kpis.mrr.deltaPercent} deltaLabel={deltaLabel} spark={spark((m) => m.mrr)} isLoading={isLoading} />
