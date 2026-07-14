@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from './components/DashboardLayout';
+import DataTable from './components/DataTable';
 import KPICard from './components/KPICard';
 import RevenueChart from './components/RevenueChart';
-import { ANCHOR_DATE, dailyMetrics } from './data/mockData';
+import { ANCHOR_DATE, dailyMetrics, transactions } from './data/mockData';
 import { useDarkMode } from './hooks/useDarkMode';
-import { previousWindow, rangeWindow } from './lib/dateRange';
+import { previousWindow, rangeStart, rangeWindow } from './lib/dateRange';
 import { formatCurrency, formatNumber, formatPercent } from './lib/format';
 import { computeKpis } from './lib/kpis';
 import { sampleSeries } from './lib/sample';
@@ -26,6 +27,11 @@ export default function App() {
 
   const spark = (pick: (m: (typeof dailyMetrics)[number]) => number) =>
     sampleSeries(currentMetrics.map(pick));
+
+  const rangeTransactions = useMemo(() => {
+    const start = rangeStart(dateRange, ANCHOR_DATE);
+    return transactions.filter((t) => t.date >= start);
+  }, [dateRange]);
 
   const darkToggle = (
     <button
@@ -61,6 +67,7 @@ export default function App() {
             <RevenueChart data={currentMetrics} dark={dark} isLoading={isLoading} />
           </div>
         </div>
+        <DataTable transactions={rangeTransactions} isLoading={isLoading} />
       </>
     </DashboardLayout>
   );
