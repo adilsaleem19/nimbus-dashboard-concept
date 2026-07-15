@@ -24,7 +24,7 @@ export default function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-dvh overflow-hidden">
       <aside className="hidden w-56 shrink-0 flex-col border-r border-ink/10 bg-paper md:flex dark:border-white/10 dark:bg-paper-dark">
         <div className="flex items-center gap-2.5 px-5 py-5">
           <CloudLogo />
@@ -61,14 +61,14 @@ export default function DashboardLayout({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-ink/10 bg-page/90 px-4 py-3 backdrop-blur md:px-6 dark:border-white/10 dark:bg-page-dark/90">
+        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-ink/10 bg-page px-4 py-3 md:px-6 dark:border-white/10 dark:bg-page-dark">
           <div className="flex items-center gap-2.5">
             <h1 className="font-display text-base font-semibold md:hidden">Nimbus</h1>
             <h1 className="hidden font-display text-base font-semibold md:block">Overview</h1>
           </div>
           <div className="flex items-center gap-2">{topBarContent}</div>
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   );
