@@ -6,7 +6,7 @@ click-to-drill-down from plan breakdown into the underlying transactions. Built
 with React, TypeScript, and Recharts; focus was on making the data interaction
 feel like a real product, not a static report.
 
-**Live:** _add your Vercel URL here after deploying (`npx vercel --prod`)_
+**Live demo:** https://analytics-dashboard-mu-murex.vercel.app/
 
 ## Stack
 
