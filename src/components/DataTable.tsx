@@ -1,7 +1,8 @@
 import { useState, type ReactNode, type Ref } from 'react';
-import type { Plan, Transaction, TransactionStatus } from '../types';
+import type { Transaction } from '../types';
 import { formatCurrency, formatDate } from '../lib/format';
 import { sortTransactions, type SortColumn, type SortDirection } from '../lib/sort';
+import { PlanTag, StatusPill } from './pills';
 
 const COLUMNS: Array<{ key: SortColumn; label: string; numeric?: boolean }> = [
   { key: 'customerName', label: 'Customer' },
@@ -10,41 +11,6 @@ const COLUMNS: Array<{ key: SortColumn; label: string; numeric?: boolean }> = [
   { key: 'date', label: 'Date' },
   { key: 'status', label: 'Status' },
 ];
-
-const STATUS_STYLES: Record<TransactionStatus, { dot: string; pill: string; label: string }> = {
-  paid: {
-    dot: 'bg-[#0ca30c]',
-    pill: 'bg-[#0ca30c]/10 text-good dark:text-good-dark',
-    label: 'Paid',
-  },
-  pending: {
-    dot: 'bg-[#fab219]',
-    pill: 'bg-[#fab219]/15 text-[#8a5a00] dark:text-[#fab219]',
-    label: 'Pending',
-  },
-  failed: {
-    // darker text than the #d03b3b dot so 12px pill text clears AA on the light tint
-    dot: 'bg-[#d03b3b]',
-    pill: 'bg-[#d03b3b]/10 text-[#a51f1f] dark:text-bad-dark',
-    label: 'Failed',
-  },
-};
-
-const PLAN_DOTS: Record<Plan, string> = {
-  Starter: 'bg-accent dark:bg-accent-dark',
-  Growth: 'bg-[#1baf7a] dark:bg-[#199e70]',
-  Scale: 'bg-[#eda100] dark:bg-[#c98500]',
-};
-
-function StatusPill({ status }: { status: TransactionStatus }) {
-  const s = STATUS_STYLES[status];
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${s.pill}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} aria-hidden="true" />
-      {s.label}
-    </span>
-  );
-}
 
 function SortIndicator({ direction }: { direction: SortDirection | null }) {
   return (
@@ -143,12 +109,7 @@ export default function DataTable({
                   className="border-b border-ink/5 last:border-0 hover:bg-ink/[0.02] dark:border-white/5 dark:hover:bg-white/[0.03]"
                 >
                   <td className="px-4 py-2.5 font-medium">{t.customerName}</td>
-                  <td className="px-4 py-2.5">
-                    <span className="inline-flex items-center gap-1.5 text-ink-2 dark:text-ink-2-dark">
-                      <span className={`h-1.5 w-1.5 rounded-full ${PLAN_DOTS[t.plan]}`} aria-hidden="true" />
-                      {t.plan}
-                    </span>
-                  </td>
+                  <td className="px-4 py-2.5"><PlanTag plan={t.plan} /></td>
                   <td className="px-4 py-2.5 text-right tabular-nums">{formatCurrency(t.amount)}</td>
                   <td className="px-4 py-2.5 tabular-nums text-ink-2 dark:text-ink-2-dark">{formatDate(t.date)}</td>
                   <td className="px-4 py-2.5"><StatusPill status={t.status} /></td>
