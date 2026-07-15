@@ -8,6 +8,39 @@ feel like a real product, not a static report.
 
 **Live demo:** https://analytics-dashboard-mu-murex.vercel.app/
 
+![Nimbus analytics dashboard — Overview](docs/overview-light.png)
+
+## What this demonstrates
+
+A subscription dashboard is a common portfolio project, so the goal was to get
+the details right — the ones that separate a real product surface from a
+tutorial build:
+
+- **Tested domain logic, not just UI.** KPI math, date-range windows, the
+  per-customer roll-up, and table sorting are pure, framework-free modules
+  covered by 48 unit tests. The React layer is a thin shell over logic that's
+  verified in isolation.
+- **Deterministic by design.** Every value comes from a seeded PRNG (mulberry32)
+  anchored to a fixed date, so the app renders identically on every reload —
+  dependable for screenshots, review, and tests, with no backend to run.
+- **Accessibility as a requirement.** `aria-sort` on sortable headers, the donut
+  mirrored as a keyboard-navigable legend, focus restored to a stable element
+  when a drill-down filter is cleared, WCAG AA-tuned status pills, and full
+  `prefers-reduced-motion` support.
+- **Product decisions, not just charts.** Churn is normalized to a 30-day rate so
+  the 7/30/90-day ranges stay comparable, the churn KPI inverts its delta color
+  (down is good), and loading skeletons and empty states are first-class.
+- **Real client-side routing.** Five views with genuine URLs, back/forward, and
+  refresh-safe deep links, plus a responsive layout that collapses the sidebar
+  into a mobile nav.
+- **One source of visual truth.** A single validated color palette and CSS design
+  tokens drive both themes; dark mode persists with no flash-of-wrong-theme via a
+  pre-paint script.
+
+*The same Overview in dark mode:*
+
+![Nimbus analytics dashboard in dark mode](docs/overview-dark.png)
+
 ## Stack
 
 React 19 · TypeScript · Vite · Tailwind CSS v4 · Recharts · date-fns · Vitest
